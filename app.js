@@ -4,8 +4,12 @@ const { routeAuth } = require("./routes/route-auth");
 const express = require("express");
 const { routeHome } = require("./routes/route-home");
 const app = express();
+const corsOption = {
+  origin: "http://localhost:5173",
+  optionSuccesStatus: 200,
+};
 
-app.use(cors());
+app.use(cors(corsOption));
 app.use(express.json());
 
 app.use("/api/v1/auth", routeAuth);

@@ -18,7 +18,7 @@ const controllerRegister = async (req, res) => {
 
     const emailVerify = await findEmail(emailUser);
     if (emailVerify) {
-      throw Error("Email_Exist");
+      throw new Error("Email_Exist");
     }
 
     const passwordHash = await bcrypt.hash(passwordUser, 10);
@@ -55,7 +55,7 @@ const controllerLogin = async (req, res) => {
 
     const dataUser = await findEmail(emailUser);
     if (!dataUser) {
-      throw Error("Incorrect_credentials");
+      throw new Error("Incorrect_credentials");
     }
 
     const passwordVerify = await bcrypt.compare(
@@ -63,7 +63,7 @@ const controllerLogin = async (req, res) => {
       dataUser.passwordUser,
     );
     if (!passwordVerify) {
-      throw Error("Incorrect_credentials");
+      throw new Error("Incorrect_credentials");
     }
 
     const payload = {
