@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const controllerRegister = async (req, res) => {
+const controllerRegister = async (req, res, next) => {
   try {
     const {
       nameUser,
@@ -18,7 +18,9 @@ const controllerRegister = async (req, res) => {
 
     const emailVerify = await findEmail(emailUser);
     if (emailVerify) {
-      throw new Error("Email_Exist");
+      const error = new Error("El email ya tiene una cuenta");
+      error.statusCode = 400;
+      throw error;
     }
 
     const passwordHash = await bcrypt.hash(passwordUser, 10);
@@ -35,27 +37,19 @@ const controllerRegister = async (req, res) => {
       msg: "Creado con exito el usuario",
     });
   } catch (error) {
-    console.log("Error en el controller register: ", error.message);
-    if (error.message === "Email_Exist") {
-      return res.status(401).json({
-        ok: false,
-        msg: "El correo ya tiene una cuenta",
-      });
-    }
-    return res.status(500).json({
-      ok: false,
-      msg: "Error en el servidor",
-    });
+    next(error);
   }
 };
 
-const controllerLogin = async (req, res) => {
+const controllerLogin = async (req, res, next) => {
   try {
     const { emailUser, passwordUser } = req.body;
 
     const dataUser = await findEmail(emailUser);
     if (!dataUser) {
-      throw new Error("Incorrect_credentials");
+      const error = new Error("Credenciales incorrectas");
+      error.statusCode = 400;
+      throw error;
     }
 
     const passwordVerify = await bcrypt.compare(
@@ -63,7 +57,9 @@ const controllerLogin = async (req, res) => {
       dataUser.passwordUser,
     );
     if (!passwordVerify) {
-      throw new Error("Incorrect_credentials");
+      const error = new Error("Credenciales incorrectas");
+      error.statusCode = 400;
+      throw error;
     }
 
     const payload = {
@@ -82,17 +78,7 @@ const controllerLogin = async (req, res) => {
       token: token,
     });
   } catch (error) {
-    console.log("Error en el controllerLogin: ", error.message);
-    if (error.message === "Incorrect_credentials") {
-      return res.status(401).json({
-        ok: false,
-        msg: "Sus credenciales son incorrectas",
-      });
-    }
-    return res.status(500).json({
-      ok: false,
-      msg: "Error en el servidor",
-    });
+    next(error);
   }
 };
 

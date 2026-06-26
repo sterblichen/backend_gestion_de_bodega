@@ -19,7 +19,7 @@ const registerLogin = async ({
     ]);
   } catch (error) {
     console.log("Error en el service-login: ", error.message);
-    throw Error(error.message);
+    throw error;
   }
 };
 
@@ -33,7 +33,7 @@ const findEmail = async (email) => {
     return rows[0];
   } catch (error) {
     console.log("Error en el service de findEmail: ", error.message);
-    throw Error(error.message);
+    throw error;
   }
 };
 

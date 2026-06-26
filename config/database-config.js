@@ -18,6 +18,7 @@ const testConnection = async () => {
       "Error en la conexiona la base de datos: ",
       error.message,
     );
+    process.exit(1);
   }
 };
 

@@ -1,27 +1,44 @@
+const e = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+
+const JWT_ERRORS = {
+  TokenExpiredError: {
+    status: 401,
+    msg: "El tiempo de sesión expiró.",
+  },
+  JsonWebTokenError: {
+    status: 401,
+    msg: "Token inválido, alterado o corrupto.",
+  },
+  NotBeforeError: {
+    status: 401,
+    msg: "El token aún no está activo.",
+  },
+};
+
 const jwtVerify = (req, res, next) => {
   try {
     const authHeader = req.header("Authorization");
     if (!authHeader) {
-      throw Error("No_exist_token");
+      const error = new Error("No hay token de autorizacion");
+      error.statusCode = 400;
+      throw error;
     }
     const token = authHeader.split(" ")[1];
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     req.usuario = payload;
     next();
   } catch (error) {
-    console.log("Error en el jwtVerify: ", error.message);
-    if (error.message === "No_exist_token") {
-      return req.status(401).json({
-        ok: false,
-        msg: "No hay token en la peticion",
-      });
+    const knowError = JWT_ERRORS[error.message];
+    if (knowError) {
+      error.statusCode = knowError.status;
+      error.message = knowError.msg;
+    } else if (!error.statusCode) {
+      error.statusCode = 500;
+      error.message = "Error interno del servidor";
     }
-    return res.status(401).json({
-      ok: false,
-      msg: "Token expirado",
-    });
+    next(error);
   }
 };
 
