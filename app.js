@@ -15,7 +15,7 @@ app.use(cors(corsOption));
 app.use(express.json());
 
 app.use("/api/v1/auth", routeAuth);
-app.use("/api/v1/", routeHome);
+app.use("/api/v1/user", routeHome);
 
 app.use(errorHandle);
 

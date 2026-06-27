@@ -30,13 +30,10 @@ const jwtVerify = (req, res, next) => {
     req.usuario = payload;
     next();
   } catch (error) {
-    const knowError = JWT_ERRORS[error.message];
+    const knowError = JWT_ERRORS[error.name];
     if (knowError) {
       error.statusCode = knowError.status;
       error.message = knowError.msg;
-    } else if (!error.statusCode) {
-      error.statusCode = 500;
-      error.message = "Error interno del servidor";
     }
     next(error);
   }

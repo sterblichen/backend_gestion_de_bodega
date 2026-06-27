@@ -19,7 +19,9 @@ const registerSchme = z.object({
     .min(1, { error: "Campo obligatorio" })
     .min(8, { error: "Minimo 8 caracteres" })
     .trim(),
-  roleUser: z.string().min(1, { error: "Campo Obligatorio" }).trim(),
+  roleUser: z
+    .number({ error: "Coloque el formato correcto" })
+    .min(1, { error: "Campo Obligatorio" }),
 });
 
 const loginSchema = z.object({

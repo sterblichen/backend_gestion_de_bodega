@@ -1,8 +1,3 @@
-const {
-  registerSchme,
-  loginSchema,
-} = require("../schemas/loginBodySchema");
-
 const validatorSchema = (schema) => (req, res, next) => {
   try {
     req.body = schema.parse(req.body);
